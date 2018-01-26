@@ -1,0 +1,18 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Registers}{}% 2
+\BOOKMARK [1][-]{section.3}{Operations}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Summary}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Arithmetic}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{Bitwise}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.4}{Branches}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.5}{Memory}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.6}{Manipulation}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.7}{Float Conversion}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.8}{Float Arithmetic}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.9}{Float Control}{section.3}% 12
+\BOOKMARK [1][-]{section.4}{Encoding}{}% 13
+\BOOKMARK [1][-]{section.5}{Modes}{}% 14
+\BOOKMARK [1][-]{section.6}{Interrupts}{}% 15
+\BOOKMARK [2][-]{subsection.6.1}{Processing}{section.6}% 16
+\BOOKMARK [2][-]{subsection.6.2}{Configuration}{section.6}% 17
+\BOOKMARK [2][-]{subsection.6.3}{Context Switch}{section.6}% 18

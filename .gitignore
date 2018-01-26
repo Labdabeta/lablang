@@ -1,0 +1,8 @@
+*.swp
+*.swo
+lcc
+*.ali
+*.o
+*.aux
+*.log
+*.pdf

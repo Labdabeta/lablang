@@ -1,0 +1,25 @@
+[GENERATED OBJECT FILE]
+b__main.o
+[PROJECT FILES]
+/home/louis/projects/lab/compiler/c/compiler.gpr
+20180122235814
+[BOUND OBJECT FILES]
+/home/louis/projects/lab/compiler/c/build/buffers.o
+/home/louis/projects/lab/compiler/c/build/character_utils.o
+/home/louis/projects/lab/compiler/c/build/lexer.o
+/home/louis/projects/lab/compiler/c/build/preprocessor.o
+/home/louis/projects/lab/compiler/c/build/main.o
+[GENERATED SOURCE FILES]
+b__main.ads
+b__main.adb
+b__main.ali
+[RESULTING OPTIONS]
+-L/home/louis/projects/lab/compiler/c/build/
+-L/home/louis/projects/lab/compiler/c/build/
+-L/usr/lib/gcc/x86_64-pc-linux-gnu/7.2.1/adalib/
+-static
+-static-libgcc
+/usr/lib/gcc/x86_64-pc-linux-gnu/7.2.1/adalib/libgnarl.a
+/usr/lib/gcc/x86_64-pc-linux-gnu/7.2.1/adalib/libgnat.a
+-lpthread
+-lrt

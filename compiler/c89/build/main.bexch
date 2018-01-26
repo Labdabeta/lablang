@@ -1,0 +1,28 @@
+[GENERATED OBJECT FILE]
+b__main.o
+[PROJECT FILES]
+/home/louis/projects/lab/compiler/c89/compiler.gpr
+20180126191659
+[BOUND OBJECT FILES]
+/home/louis/projects/lab/compiler/c89/build/buffers.o
+/home/louis/projects/lab/compiler/c89/build/source.o
+/home/louis/projects/lab/compiler/c89/build/mapping.o
+/home/louis/projects/lab/compiler/c89/build/lining.o
+/home/louis/projects/lab/compiler/c89/build/tokens.o
+/home/louis/projects/lab/compiler/c89/build/decomposing.o
+/home/louis/projects/lab/compiler/c89/build/preprocessing.o
+/home/louis/projects/lab/compiler/c89/build/main.o
+[GENERATED SOURCE FILES]
+b__main.ads
+b__main.adb
+b__main.ali
+[RESULTING OPTIONS]
+-L/home/louis/projects/lab/compiler/c89/build/
+-L/home/louis/projects/lab/compiler/c89/build/
+-L/usr/lib/gcc/x86_64-pc-linux-gnu/7.2.1/adalib/
+-static
+-static-libgcc
+/usr/lib/gcc/x86_64-pc-linux-gnu/7.2.1/adalib/libgnarl.a
+/usr/lib/gcc/x86_64-pc-linux-gnu/7.2.1/adalib/libgnat.a
+-lpthread
+-lrt

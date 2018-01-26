@@ -1,0 +1,292 @@
+% TODO: Consider no memory mapped I/O, but port mapped I/O instead.
+
+\documentclass{article}
+
+\usepackage[margin=0.5in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{courier}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[usenames]{xcolor}
+
+\lstdefinelanguage{lab}
+{keywords={add,mul,div,mod,and,nan,orr,xor,bgt,beq,cas,bal,ldr,str,get,put,clz,pop,shr,mov,itf,flr,cel,rnd,fad,fmu,fdv,fmo,fbg,fbe,ldf,stf},
+ otherkeywords={r0,r1,r2,r3,r4,r5,r6,r7,fp,sp,(,)},
+ sensitive=false,
+ comment=[l]{;},
+}
+
+\definecolor{grey}{rgb}{0,0.6,0}
+\lstset{
+    basicstyle=\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{grey}
+}
+
+\newcommand{\labcode}[1]{\colorbox{lightgray}{\lstinline[language=lab]{#1}}}
+
+\title{LAB Processor -- Documentation}
+\date{\today}
+\author{Louis A. Burke}
+
+\begin{document}
+\maketitle\clearpage
+
+\section{Introduction}
+
+The LAB processor is a general-purpose reduced instruction set processor design.
+Its intended purpose is to provide a simple library to emulate a processor for
+educational purposes. It is packaged with two implementations, one is a 32-bit
+system with $2^21$ words of addressable memory. The other is a 64-bit system
+with $2^53$ words of addressable memory. Both systems support multiple
+processors, interrupt tables, and memory mapped addressing. Additionally the
+implementations can simulate different branch predictors, caches, and pipelines.
+Effectively every aspect of the processor can be fine-tuned when using the
+provided implementations, however sensible defaults are provided.
+
+In addition to the provided emulation implementations, there is also an
+assembler, C compiler, and linker which can be used to build binaries for LAB.
+
+\section{Registers}
+
+The LAB processor has 8 registers, three of which are special-purpose. They are
+summarized in table \ref{table:registers}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ll}
+    \toprule Register & Description \\ \midrule
+    \labcode{r0} & Read-only, returns 0 \\
+    \labcode{r1} .. \labcode{r5} & General purpose \\
+    \labcode{fp} (\labcode{r6}) & Frame pointer (works as general purpose) \\
+    \labcode{sp} (\labcode{r7}) & Stack pointer (initialized to highest address)
+\end{tabular}
+\caption{LAB Registers}
+\label{table:registers}
+\end{table}
+
+In addition to these 8 registers, there is also the hidden program counter
+register. This is only modifiable via branch instructions.
+
+\section{Operations}
+
+The LAB processor has 32 operations. Every operation takes two registers and an
+immediate value. The only difference between the 64 and 32 bit systems is how
+large the immediate value can be. Their 3-letter mnemonics and descriptions
+are listed in table \ref{table:operations}. The registers are named $A$ and $B$
+while the immediate value is named $I$. Memory access is written as
+$[x]$.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{cclll}
+    \toprule Group & Op-code & OP & Description \\ \midrule
+    Arithmetic  & 00000 & \labcode{ADD} & $A := A + B + I$ \\
+                & 00001 & \labcode{MUL} & $A := A(B + I)$ \\
+                & 00010 & \labcode{DIV} & $A := \frac{A}{B + I}$ \\
+                & 00011 & \labcode{MOD} & $A := A \mod (B + I)$ \\ \midrule
+    Bitwise     & 00100 & \labcode{AND} & $A := A \land (B + I)$ \\
+                & 00101 & \labcode{NAN} & $A := A \uparrow (B + I)$ \\
+                & 00110 & \labcode{ORR} & $A := A \lor (B + I)$ \\
+                & 00111 & \labcode{XOR} & $A := A \oplus (B + I)$ \\ \midrule
+    Branches    & 01000 & \labcode{BGT} & if $A > B$ goto $I$ \\
+                & 01001 & \labcode{BEQ} & if $A = B$ goto $I$ \\
+                & 01010 & \labcode{CAS} & if $[I] = A$ then $A := 1; [I] = B$ else $A := 0$ \\
+                & 01011 & \labcode{BAL} & $A := PC$ goto $B + I$ \\ \midrule
+    Memory      & 01100 & \labcode{LDR} & $A := [B + I]$ \\
+                & 01101 & \labcode{STR} & $[B + I] := A$ \\
+                & 01110 & \labcode{GET} & $A := read(I + B)$ \\
+                & 01111 & \labcode{PUT} & $write(I + B) := A$ \\ \midrule
+    Bit-Manip   & 10000 & \labcode{CLZ} & $A := \mbox{clz}(B + I)$ \\
+                & 10001 & \labcode{POP} & $A := \mbox{popcnt}(B + I)$ \\
+                & 10010 & \labcode{SHR} & $A := \frac{A}{2^{B + I}}$ \\
+                & 10011 & \labcode{MOV} & $A := B + I$ \\ \midrule
+    Float I     & 10100 & \labcode{ITF} & $A := \mbox{float}(B + I)$ \\
+    (Conversion)& 10101 & \labcode{FLR} & $A := \lfloor B + I \rfloor$ \\
+                & 10110 & \labcode{CEL} & $A := \lceil B + I \rceil$ \\
+                & 10111 & \labcode{RND} & $A := \lfloor B + I + 0.5 \rfloor$ \\ \midrule
+    Float II    & 11000 & \labcode{FAD} & $A := A + B + I$ \\
+    (Arithmetic)& 11001 & \labcode{FMU} & $A := A(B + I)$ \\
+                & 11010 & \labcode{FDV} & $A := \frac{A}{B + I}$ \\
+                & 11011 & \labcode{FMO} & $A := A - (B + I) \lfloor \frac{A}{B + I} \rfloor$ \\ \midrule
+    Float III   & 11100 & \labcode{FBG} & if $A > B$ goto $I$ \\
+    (Control)   & 11101 & \labcode{FBE} & if $A = B$ goto $I$ \\
+                & 11110 & \labcode{LDF} & $A := [B + I]$ \\
+                & 11111 & \labcode{STF} & $[B + I] := A$ \\ \midrule
+\end{tabular}
+\caption{LAB Operations}
+\label{table:operations}
+\end{table}
+
+\section{Encoding}
+
+The most significant 5 bits of the operation oncode the operation in use. The
+following three bits encode the $A$ register, the three after that the $B$
+register. The remaining bits encode the $I$ value. The immediate can be of
+different lengths depending on the size of the operations (32 or 64-bit). The
+immediate value is always unsigned. For reference, here is a bit-packing
+representation with most significant on the left, and least significant on the
+right:
+
+% TODO: maybe a status bit and more ops (vector stuff?)
+% TODO: maybe smaller instruction encoding size (13-bit max immediate??)
+% TODO: PROBABLY - a simple 'core' that can be hooked up (2nd line, 1st given
+% via get/put) perhaps mimic ARM more (EG: more special registers? PC accessible
+% can be useful?)
+% Encoding:  BB: 00 = whole, 01 = low half, 10 = high half, 11 = byte, S: signed
+% SBBNNNNN AAAABBBB IIIIIIII IIIIIIII
+\texttt{NNNNNAAA BBBIIIII IIIIIIII IIIIIIII \textcolor{lightgray}{IIIIIIII IIIIIIII IIIIIIII IIIIIIII}}
+
+\section{Pipeline}
+
+% TODO
+
+\section{I/O}
+
+% TODO
+
+\section{Interrupts}
+
+The LAB processor uses a Vectored Interrupt Controller (VIC). It supports two
+kinds of interrupts. The first are the \textit{Interrupt Requests} (IRQs). The
+second are \textit{Fast Interrupt Requests} (FIQs). All FIQs have a higher
+priority than all IRQs. Additionally while servicing an FIQ no other interrupt
+may occur, meanwhile during processing of an IRQ an interrupt of lower priority
+could be called.
+
+The priorities are all from least significant bit to highest significant bit
+within the status registers (see below).
+
+The VIC utilizes a few key memory-mapped registers. These are relative to the
+VIC base address. This address is the first not accessible via the immediate
+value. Thus on 32-bit machines it is \texttt{0x20\_0000} while on 64-bit
+machines it is \texttt{0x20\_0000\_0000\_0000}.
+
+% TODO: HERE: Describe how the bits in these registers are packed
+% TODO: make this into a table with clicky links to descriptions
+
+The first VIC register is at offset 0 (exactly at the VIC base address). It is
+the IRQ status register. Its value contains a one at each bit position that
+is enabled, selected for IRQ, and active. Each of these ones will generate an
+interrupt until all are cleared. The IRQ status register is read-only.
+
+The second VIC register is at offset 1. It is the FIQ status register. Its
+value contains a one at each bit position that is enabled, selected for FIQ, and
+active. Each of these ones will generate an interrupt until all are cleared. The
+FIQ status register is read-only.
+
+The third VIC register is at offset 2. It is the raw interrupt status register.
+Its value contains a one at each bit position that is active. The raw interrupt
+status register is read-only.
+
+The fourth VIC register is at offset 3. It is the interrupt select register. Its
+one bits represent interrupts that will be handled by FIQs while the zero bits
+represent interrupts that will be handled by IRQs.
+
+The fifth VIC register is at offset 4. It is the interrupt enable register. Its
+one bits represent interrupts that can be handled by the interrupt handler.
+
+The sixth VIC register is at offset 5. It is the interrupt enable clear
+register. Any bits written to one on it will be set to zero on the interrupt
+enable register. The interrupt enable clear register is write-only.
+
+The seventh VIC register is at offset 6. it is the software interrupt register.
+Any bit written to 1 on it will generate the corresponding interrupt.
+
+The eighth VIC register is at offset 7. It is the software interrupt clear
+register. Any bit written to 1 on it will set the corresponding bit to 0 on the
+software interrupt register.
+
+The ninth VIC register is at offset 8. It is the protection register. If the
+least significant bit is set to 1, then all VIC registers can only be accessed
+in protected mode. It is only accessible from protected mode.
+
+The tenth VIC register is at offset 9. It is the vector address register. It
+contains the address of the currently operating interrupt service routine
+(ISR). If the value in this register is read it signals that processing of the
+interrupt is starting. No lower priority interrupts can occur until any value is
+written to this address again.
+
+The eleventh VIC register is at offset 10. It is the default vector address
+register. It contains the address of the default ISR.
+
+The twelfth to fourty-fourth VIC registers are at offsets 11 to 43. They
+correspond to the address of the ISR for the associated interrupt. If set to 0,
+they will not be called and the default will be used instead.
+
+Which interrupts correspond to which external events is implementation defined.
+It is often linked to external devices which are accessed with the \labcode{GET}
+and \labcode{PUT} instructions. The only exception is interrupt 0, which is
+caused by a protection violation.
+
+\section{Protection}
+
+The LAB processor has two protection modes. It starts in protected mode and
+switches to user mode when the protection status register is written. The
+protection status register is located at memory address 1.
+
+In user mode writing to the protection status register will jump to the address
+in the protection address register (memory address 0) and switch to protected
+mode. All values in registers persist across a mode change.
+
+In protected mode whatever value is written to the protection status register
+will be the minimum usable memory address for the user. Any access to memory
+lower than the value stored will trigger a protection violation (or accessing
+the VIC registers if they are protected).
+
+\section{LAB Assembly}
+
+The provided assembler accepts commands in the \labcode{OP A, B (I)} format. The
+immediate value is optional, but the registers are not. The immediate value can
+be any basic literal expression. The basic literal expressions can consist of
+addition, subtraction, multiplication, division, and parentheses. Additionally
+it may refer to labels in the code or the special ``current instruction'' label
+`.'. In these arithmetic expressions everything is implicitly multiplied by the
+word size. As such `$.-1$' always refers to the previous operation.
+
+As well as labels, the assembler accepts sections. These sections are used by
+the linker to put things where they need to be in the final executable.
+
+% TODO: Describe assembly language in detail.
+% TODO: Thorough description of .lab files
+
+\section{Command Usage}
+
+The compiler produces assembly files which when assembled produce LAB object
+files. These files contain lists of exported symbols alongside the data they
+preface and its length. The linker must then be invoked to put all the symbols
+together. The linker contains a default linking file, but custom files can be
+used as well.
+
+
+\subsection{Linker File Description}
+
+A linker file consists of an entry point specification followed by a list of
+section descriptions. A section description consists of a file name or glob and
+an optional section specification. Alternatively a section description may
+specify a modification to the `.' variable, which is the address to which the
+next cell of memory will be written.
+% TODO: Thorough description of lld files
+
+\subsection{Default Linker File}
+
+The default linker file is as follows:
+
+\begin{lstlisting}
+ENTRY (main)
+SECTIONS {
+    code : { *(.text) };
+    initialized_statics : { *(.data) };
+    uninitialized_statics : { *(.bss) };
+    common : { *(COMMON) };
+    anything_else : { * };
+    heap_start = .;
+}
+\end{lstlisting}
+
+\end{document}

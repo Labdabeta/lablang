@@ -1,0 +1,9 @@
+#!/bin/lab
+
+;"%d "               # Set i/o device to integer stdio
+'x                   # Read value
+.a                   # Save position as a
+,                    # read a guess
+=                    # Compare
+?A0`                 # Loop if incorrect
+

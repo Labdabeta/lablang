@@ -1,0 +1,124 @@
+-- TODO: make generic implementation and create separate timing access etc mods
+
+-- 32-bit implementation
+package LAB is
+    type CPU_State is private;
+    type CPU is access all CPU_State;
+    type Register_Index is range 0 .. 8;
+    type Register_Value is mod 2 ** 32;
+    type Immediate_Value is mod 2 ** 21;
+    type Interrupt is range 0 .. 31;
+    type Operation is (
+        OP_ADD,OP_MUL,OP_DIV,OP_MOD, OP_AND,OP_NAN,OP_ORR,OP_XOR,
+        OP_BGT,OP_BEQ,OP_JMP,OP_BAL, OP_LDR,OP_STR,OP_TAS,OP_CAS,
+        OP_CLZ,OP_POP,OP_SHR,OP_ABS, OP_ITF,OP_FLR,OP_CEL,OP_RND,
+        OP_FAD,OP_FMU,OP_FDV,OP_FMO, OP_FBG,OP_FBE,OP_LDF,OP_STF);
+    type Ticks is new Natural;
+
+    -- Ticks required during EXE phase of pipeline
+    type Base_Operation_Times is array (Operation) of Ticks;
+    type Failure_Operation_Times is
+        record
+            Branch_Miss : Ticks; -- 0 means just the loss of pipeline
+            Cache_Miss : Ticks; -- 0 means just take the usual 1 tick
+        end record;
+
+    -- How many entries to consider against
+    type Branch_History_Length is new Positive;
+
+    -- How many bits per state
+    type Branch_Predictor is (
+        BRANCH_WRONG, BRANCH_LOCAL, BRANCH_GLOBAL, BRANCH_ORACLE);
+    type Branch_Predictor_Bits is range 1 .. 31;
+    type Branch_Specification is
+        record
+            Kind : Branch_Predictor;
+            States : Branch_History_Length;
+            Size : Branch_Predictor_Bits;
+        end record;
+
+    type Cache_Associativity is (
+        CACHE_DIRECT_MAP, CACHE_TWO_WAY, CACHE_FOUR_WAY, CACHE_EIGHT_WAY,
+        CACHE_FULLY);
+    type Cache_Specification is
+        record
+            Associativity : Cache_Associativity;
+            Block_Size : Positive;
+            Size : Natural;
+        end record;
+
+    type Put_Handler is access procedure (
+        Device : in Immediate_Value;
+        Value : in Register_Value;
+        Data : in Register_Value);
+    type Get_Handler is access function (
+        Device : in Immediate_Value;
+        Value : in Register_Value)
+        return Register_Value;
+
+    type CPU_Specification is
+        record
+            Base_Times : Base_Operation_Times;
+            Fail_Times : Failure_Operation_Times;
+            Branch : Branch_Specification;
+            Cache : Cache_Specification;
+            Memory_Size : Register_Value;
+            Put : Put_Handler;
+            Get : Get_Handler;
+        end record;
+
+    function Create (From : in CPU_Specification) return CPU_State;
+    procedure Modify (What : in out CPU_State; Spec : in CPU_Specification);
+    procedure Trigger_Interrupt (On : in out CPU_State; Address : in Interrupt);
+    procedure Step (What : in out CPU_State);
+    procedure Destroy (What : in out CPU_State);
+private
+    -- -ve means not taken, +ve means taken
+    type Branch_Saturation is range -2 ** 31 .. 2 ** 31;
+    type Branch_Saturations is array (Branch_History_Length range <>)
+        of Branch_Saturation;
+    type Local_Branch_Saturations is array (
+        Immediate_Value range <>, Branch_History_Length range <>)
+        of Branch_Saturation;
+    type Branch_Status (
+        Kind : Branch_Predictor;
+        States : Branch_History_Length;
+        Size : Branch_Predictor_Bits;
+        Memory_Size : Register_Value) is
+        record
+            case Kind is
+                when BRANCH_WRONG | BRANCH_ORACLE => null;
+                when BRANCH_GLOBAL =>
+                    Global : Branch_Saturations (1 .. States);
+                when BRANCH_LOCAL =>
+                    Local : Local_Branch_Saturations (
+                        0 .. Memory_Size, 1 .. States);
+            end case;
+        end record;
+    type Branch_Status_Access is access Branch_Status;
+
+    type Register_Array is array (Positive range <>) of Register_Value;
+    type Cache_Entry (Block_Size : Positive) is
+        record
+            Root_Address : Register_Value;
+            Values : Register_Array (1 .. Block_Size);
+            Age : Natural; -- only updates when a new cache is loaded
+        end record;
+    type Cache_Status is array (Natural range <>) of Cache_Entry;
+    type Cache_Status_Access is not null access Cache_Status;
+
+    type Register_Page is array (Register_Index) of Register_Value;
+    type Register_Memory is array (Register_Value range <>) of Register_Value;
+    type Memory_Access is access Register_Memory;
+
+    type CPU_State is
+        record
+            Specification : CPU_Specification;
+            Branch : Branch_Status_Access;
+            Memory_Cache : Cache_Status_Access;
+            Instruction_Cache : Cache_Status_Access;
+            Registers : Register_Page;
+            Memory : Memory_Access;
+            -- TODO: Pipeline stuff & UART/Interrupt stuff
+        end record;
+end LAB;

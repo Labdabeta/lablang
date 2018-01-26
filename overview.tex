@@ -1,0 +1,248 @@
+\documentclass{article}
+
+\usepackage[margin=0.5in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{courier}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[usenames]{xcolor}
+
+
+%{keywords={add,mul,div,mod,and,nan,orr,xor,bgt,beq,cas,bal,ldr,str,get,put,clz,pop,shr,mov,itf,flr,cel,rnd,fad,fmu,fdv,fmo,fbg,fbe,ldf,stf},
+\lstdefinelanguage{lab}
+{keywords={add,mul,div,mod,adu,mlu,dvu,mdu,and,orr,xor,imp,nan,nor,xnr,lie,jgt,jeq,cmp,jal,jlt,jne,cas,int,ldr,str,get,put,ldb,stb,gtb,ptb,clz,ppz,shr,mov,clo,pop,she,msr,itf,flr,cel,rnd,utf,flu,clu,rdu,fad,fmu,fdv,fmo,exp,pow,log,hyp,sin,cos,tan,cmp,asn,acs,atn,ext},
+ otherkeywords={r0,r1,r2,r3,r4,r5,r6,r7,fp,sp,(,)},
+ sensitive=false,
+ comment=[l]{;},
+}
+
+\definecolor{grey}{rgb}{0,0.6,0}
+\lstset{
+    basicstyle=\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{grey}
+}
+
+\newcommand{\labcode}[1]{\colorbox{lightgray}{\lstinline[language=lab]{#1}}}
+
+\title{LAB Processor -- Overview}
+\date{\today}
+\author{Louis A. Burke}
+
+\begin{document}
+\maketitle\clearpage
+
+\section{Introduction}
+
+\section{Registers}
+
+There are 32 registers indexes in the LAB processor. These address 31 registers
+and 32 special registers.
+
+The normal registers' values are summarized in \ref{table:registers} while the
+special registers' values are summarized in \ref{table:sregisters}. Only
+protected mode code can modify the special register values.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ll}
+    \toprule Register & Description \\ \midrule
+    \labcode{r0} & Read-only, returns 0 \\
+    \labcode{r1} .. \labcode{r28} & General purpose \\
+    \labcode{fp} (\labcode{r29}) & Frame pointer (works as general purpose) \\
+    \labcode{sp} (\labcode{r30}) & Stack pointer (initialized to highest address) \\
+    \labcode{pc} (\labcode{r31}) & Program counter \\
+\end{tabular}
+\caption{LAB Registers}
+\label{table:registers}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ll}
+    \toprule Register & Description \\ \midrule
+    \labcode{sr0} & Interrupt 0 ISR \\
+    \labcode{sr1} & Interrupt 1 ISR \\
+    \labcode{sr2} & Interrupt 2 ISR \\
+    \labcode{sr3} & Interrupt 3 ISR \\
+    \labcode{sr4} & Interrupt 4 ISR \\
+    \labcode{sr5} & Interrupt 5 ISR \\
+    \labcode{sr6} & Interrupt 6 ISR \\
+    \labcode{sr7} & Interrupt 7 ISR \\
+    \labcode{sr8} & Interrupt 8 ISR \\
+    \labcode{sr9} & Interrupt 9 ISR \\
+    \labcode{sr10} & Interrupt A ISR \\
+    \labcode{sr11} & Interrupt B ISR \\
+    \labcode{sr12} & Interrupt C ISR \\
+    \labcode{sr13} & Interrupt D ISR \\
+    \labcode{sr14} & Interrupt E ISR \\
+    \labcode{sr15} & Interrupt F ISR \\
+    \labcode{sr16} & Interrupt 0|1 Status (Source/Enable) \\
+    \labcode{sr17} & Interrupt 2|3 Status (Source/Enable) \\
+    \labcode{sr18} & Interrupt 4|5 Status (Source/Enable) \\
+    \labcode{sr19} & Interrupt 6|7 Status (Source/Enable) \\
+    \labcode{sr20} & Interrupt 8|9 Status (Source/Enable) \\
+    \labcode{sr21} & Interrupt A|B Status (Source/Enable) \\
+    \labcode{sr22} & Interrupt C|D Status (Source/Enable) \\
+    \labcode{sr23} & Interrupt E|F Status (Source/Enable) \\
+    \labcode{III} (\labcode{sr24}) & Invalid Instruction ISR \\
+    \labcode{SII} (\labcode{sr25}) & Software Interrupt ISR \\
+    % https://stackoverflow.com/questions/6292620/why-are-the-return-addresses-of-prefetch-abort-and-data-abort-different-in-arm-e
+    \labcode{PAI} (\labcode{sr26}) & Prefetch Abort ISR (Couldn't load OP - should return to IR-1) \\
+    \labcode{DAI} (\labcode{sr27}) & Data Abort ISR (OP couldn't load args - should return to IR-2) \\
+    \labcode{OAI} (\labcode{sr28}) & Operation Abort ISR (e.g. divide by zero) \\
+    \labcode{ISP} (\labcode{sr29}) & Interrupt SP \\
+    \labcode{MPA} (\labcode{sr30}) & Maximum Protected Address (write to call mode switch) \\
+    \labcode{PLN} (\labcode{sr31}) & Length of unprotected memory block \\
+\end{tabular}
+\caption{LAB Special Registers}
+\label{table:sregisters}
+\end{table}
+
+\section{Operations}
+
+\subsection{Summary}
+
+Some definitions:
+
+$$\mbox{cmp}(X,Y) = \begin{cases}
+    1 & \mbox{if } X > Y \\
+    -1 & \mbox{if } X < Y \\
+    0 & \mbox{otherwise}
+\end{cases}$$
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{cclll}
+    \toprule Group & Op-code & OP & Description & Special Mode \\ \midrule
+    Arithmetic  & 00000 & \labcode{ADD}/\labcode{ADU} & $A := A + B + I$ & Signed/Unsigned \\
+                & 00001 & \labcode{MUL}/\labcode{MLU} & $A := A(B + I)$ & Signed/Unsigned \\
+                & 00010 & \labcode{DIV}/\labcode{DVU} & $A := \frac{A}{B + I}$ & Signed/Unsigned \\
+                & 00011 & \labcode{MOD}/\labcode{MDU} & $A := A \mod (B + I)$ & Signed/Unsigned \\ \midrule
+    Bitwise     & 00100 & \labcode{AND}/\labcode{NAN} & $A := A \land (B + I)$ & Normal/Negated \\
+                & 00101 & \labcode{ORR}/\labcode{NOR} & $A := A \lor (B + I)$ & Normal/Negated \\
+                & 00110 & \labcode{XOR}/\labcode{XNR} & $A := A \oplus (B + I)$ & Normal/Negated \\
+                & 00111 & \labcode{IMP}/\labcode{LIE} & $A := A \rightarrow (B + I)$ & Normal/Negated \\ \midrule
+    Branches    & 01000 & \labcode{JGT}/\labcode{JLT} & if $A >$/$< 0$ goto $B + I$ & Normal/Inverted \\
+                & 01001 & \labcode{JEQ}/\labcode{JNE} & if $A =$/$\ne 0$ goto $B + I$ & Normal/Inverted \\
+                & 01010 & \labcode{CMP}/\labcode{STC} & $A := \mbox{cmp}/\mbox{stc}^\dagger(A,B+I)$ & Compare/SC \\
+                & 01011 & \labcode{JAL}/\labcode{INT} & $A := PC$ goto $B + I$ & Normal/Interrupt \\ \midrule
+    Memory      & 01100 & \labcode{LDR}/\labcode{LDB} & $A := [B + I]$ & Little/Big-endian \\
+                & 01101 & \labcode{STR}/\labcode{STB} & $[B + I] := A$ & Little/Big-endian \\
+                % https://stackoverflow.com/questions/3215878/what-are-in-out-instructions-in-x86-used-for
+                & 01110 & \labcode{GET}/\labcode{GTB} & $A := \mbox{read}(B + I)$ & Little/Big-endian \\
+                & 01111 & \labcode{PUT}/\labcode{PTB} & $\mbox{write}(B + I) := A$ & Little/Big-endian \\ \midrule
+    Bit-Manip   & 10000 & \labcode{CLZ}/\labcode{CLO} & $A := \mbox{clz}(B + I)$ & Zeroes/Ones \\
+                & 10001 & \labcode{PPZ}/\labcode{POP} & $A := \mbox{popcnt}(B + I)$ & Zeroes/Ones \\
+                & 10010 & \labcode{SHR}/\labcode{SHE} & $A := \frac{A}{2^{B + I}}$ & Zeroes/Ones \\ % Sign extension via 1-padding
+                & 10011 & \labcode{MOV}/\labcode{MSR} & $A := B + I$/$SPR_A := B + I$ & Normal/Special \\ \midrule
+    Float I     & 10100 & \labcode{ITF}/\labcode{UTF} & $A := \mbox{float}(B + I)$ & Signed/Unsigned \\
+    (Conversion)& 10101 & \labcode{FLR}/\labcode{FLU} & $A := \lfloor B + I \rfloor$ & Signed/Unsigned \\
+                & 10110 & \labcode{CEL}/\labcode{CLU} & $A := \lceil B + I \rceil$ & Signed/Unsigned \\
+                & 10111 & \labcode{RND}/\labcode{RDU} & $A := \lfloor B + I + 0.5 \rfloor$ & Signed/Unsigned \\ \midrule
+    Float II    & 11000 & \labcode{FAD}/\labcode{EXP} & $A := A + B + I$/$e^{B+I} - 1$ & Add/Exponent \\
+    (Arithmetic)& 11001 & \labcode{FMU}/\labcode{POW} & $A := A(B + I)$/$A^{B+I}$ & Multiply/Power \\
+                & 11010 & \labcode{FDV}/\labcode{LOG} & $A := \frac{A}{B + I}$/$\ln(B + I)$ & Divide/Log \\
+                & 11011 & \labcode{FMO}/\labcode{HYP} & $A := A - (B + I) \lfloor \frac{A}{B + I} \rfloor$/$\sqrt{A^2 + (B + I)^2}$ & Normal/Hypot \\ \midrule
+    Float III   & 11100 & \labcode{SIN}/\labcode{ASN} & $A := \sin(B + I)$/$\arcsin(B + I)$ & Normal/Inverted \\
+    (Control)   & 11101 & \labcode{COS}/\labcode{ACS} & $A := \cos(B + I)$/$\arccos(B + I)$ & Normal/Inverted \\
+                & 11110 & \labcode{TAN}/\labcode{ATN} & $A := \tan(B + I)$/$\arctan(A, B + I)$ & Normal/Inverted \\
+                & 11111 & \labcode{CMP}/\labcode{LDL} & $A := \mbox{cmp}/\mbox{ldl}(A,B+I)$ & Normal/LL \\ \midrule
+\end{tabular}
+\caption{LAB Operations}
+\label{table:operations}
+\end{table}
+
+$^\dagger$ \labcode{STC} and \labcode{LDL} implement a
+load-link/store-conditional pair. Load-link reads the value in memory at $[B +
+I]$ into $A$. Then a store-conditional to the same address will only write the
+value of $A$ to $[B + I]$ if no updates have occurred at that address since the
+last load-link there.
+
+\subsection{Arithmetic}
+
+\subsection{Bitwise}
+
+\subsection{Branches}
+
+\subsection{Memory}
+
+\subsection{Manipulation}
+
+\subsection{Float Conversion}
+
+\subsection{Float Arithmetic}
+
+\subsection{Float Control}
+
+\section{Encoding}
+
+Each operation is encoded across as many bits as the register size. The first
+bit indicates whether or not to use the 'special' version of the instruction.
+The next five bits encode the instructions, then five bits to select both the A
+and B registers and finally the remaining bits encode the immediate value.
+
+This can be viewed as: \texttt{SNNN\_NNAA AAAB\_BBBB III...} however this is
+largely incorrect, as the 'first' bit is actually the least significant. Thus
+more accurately it can be viewed as: \texttt{\textbf{...III BBBB\_BAAA AANN\_NNNS}}.
+
+The immediate value is signed using 2's compliment notation.
+
+Unlike most processors, memory is accessed by word instead of byte. Thus the
+current instruction would be at $PC-1$ instead of $PC-4$ or $PC-8$.
+
+\section{Modes}
+
+The CPU starts in protected mode. In this mode all memory is writable and all
+special registers are accessible. The mode will switch to user mode as soon as
+the second-last special register is written to. In user mode any attempt to
+access memory outside of the unprotected area, or to access the special
+registers will result in an invalid instruction interrupt being raised.
+
+The unprotected memory space is denoted with the last two special registers. The
+first \labcode{MPA} (\labcode{sr30}) denotes the highest address which is
+protected from below, while the second \labcode{PLN} (\labcode{sr31}) indicates
+the length in words of the unprotected area. All memory accesses are translated
+by adding \labcode{MPA} to the accessed location. Note that this means that
+memory 0 will trigger an invalid instruction interrupt ($0 + $
+\labcode{MPA}$=$\labcode{MPA}, \labcode{MPA} is protected).
+
+To switch back to protected mode all you have to do is trigger any interrupt.
+All interrupts are handled in protected mode.
+
+\section{Interrupts}
+
+\subsection{Processing}
+
+When an interrupt occurs the CPU switches to protected mode. Execution jumps to
+the address in the relevant special register. The return address (old program
+counter) is stored at the memory location pointed to by the \labcode{ISP}
+special register (\labcode{sr29}). Meanwhile, that address is loaded into
+the \labcode{sp} register (\labcode{r30}). The value of the \labcode{ISP}
+special register is set to the old value of the \labcode{sp} register. When any
+value is written to the \labcode{ISP} special register, execution jumps to that
+address. This causes the \labcode{sp} register and the \labcode{ISP} special
+register to swap their values back.
+
+If the return address is the same as the address before the interrupt, then the
+mode is restored, otherwise the mode is switched to protected mode and will only
+return to user mode when \labcode{MPA} is written to.
+
+From the time when an interrupt occurs to the time the \labcode{ISP} special
+register is written no other interrupts can occur.
+
+\subsection{Configuration}
+
+% TODO: More x86, less ARM (http://wiki.osdev.org/Interrupts)
+% Special registers for address, have to manually save required registers
+
+\subsection{Context Switch}
+
+% TODO: Via SWI, return to kernel causes mode switch, other interrupts can occur
+% once returned
+\end{document}
