@@ -419,7 +419,7 @@ package ada_main is
    pragma Export (C, u00191, "mappingB");
    u00192 : constant Version_32 := 16#d589e3d7#;
    pragma Export (C, u00192, "mappingS");
-   u00193 : constant Version_32 := 16#7ac55330#;
+   u00193 : constant Version_32 := 16#60179715#;
    pragma Export (C, u00193, "preprocessingB");
    u00194 : constant Version_32 := 16#c676cbe0#;
    pragma Export (C, u00194, "preprocessingS");

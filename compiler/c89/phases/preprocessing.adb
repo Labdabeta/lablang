@@ -82,6 +82,14 @@ package body Preprocessing is
 
         -- 'Coloured' Macros, to prevent recursive expansion
         Expanded_Macros : String_Sets.Set;
+        Map_Buffer : aliased Mapping.Mapping_Buffers.Buffer;
+        Line_Buffer : aliased Lining.Lining_Buffers.Buffer;
+        Deco_Buffer : aliased Decomposing.Preprocessing_Buffers.Buffer;
+
+        Mapper : Mapping.Mapper (Map_Buffer'Access);
+        Liner : Lining.Liner (Map_Buffer'Access, Line_Buffer'Access);
+        Decomposer : Decomposing.Decomposer (
+            Line_Buffer'Access, Deco_Buffer'Access);
 
         procedure Process_Decomposition (
             Decomp : access Decomposing.Preprocessing_Buffers.Buffer) is
@@ -113,14 +121,6 @@ package body Preprocessing is
                 end if;
             end Process_Define;
 
-            Map_Buffer : aliased Mapping.Mapping_Buffers.Buffer;
-            Line_Buffer : aliased Lining.Lining_Buffers.Buffer;
-            Deco_Buffer : aliased Decomposing.Preprocessing_Buffers.Buffer;
-
-            Mapper : Mapping.Mapper (Map_Buffer'Access);
-            Liner : Lining.Liner (Map_Buffer'Access, Line_Buffer'Access);
-            Decomposer : Decomposing.Decomposer (
-                Line_Buffer'Access, Deco_Buffer'Access);
             procedure Include_Local_File (File : in Unbounded_String) is
                 -- TODO: Somehow use a 'bigger' one? or something?
                 Deco_Copy_Buffer :
