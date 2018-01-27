@@ -35,7 +35,7 @@ package ada_main is
    pragma Export (C, main, "main");
 
    type Version_32 is mod 2 ** 32;
-   u00001 : constant Version_32 := 16#51ee9ec4#;
+   u00001 : constant Version_32 := 16#212cf3a1#;
    pragma Export (C, u00001, "mainB");
    u00002 : constant Version_32 := 16#b6df930e#;
    pragma Export (C, u00002, "system__standard_libraryB");
@@ -195,9 +195,9 @@ package ada_main is
    pragma Export (C, u00079, "system__stringsS");
    u00080 : constant Version_32 := 16#bbaa76ac#;
    pragma Export (C, u00080, "system__file_control_blockS");
-   u00081 : constant Version_32 := 16#b589ddbf#;
+   u00081 : constant Version_32 := 16#4eea072e#;
    pragma Export (C, u00081, "decomposingB");
-   u00082 : constant Version_32 := 16#7dfa1e1e#;
+   u00082 : constant Version_32 := 16#f8a74e44#;
    pragma Export (C, u00082, "decomposingS");
    u00083 : constant Version_32 := 16#e6d4fa36#;
    pragma Export (C, u00083, "ada__stringsS");
@@ -411,17 +411,17 @@ package ada_main is
    pragma Export (C, u00187, "tokensB");
    u00188 : constant Version_32 := 16#ec3f2deb#;
    pragma Export (C, u00188, "tokensS");
-   u00189 : constant Version_32 := 16#6a3bb2a0#;
+   u00189 : constant Version_32 := 16#1405386b#;
    pragma Export (C, u00189, "liningB");
-   u00190 : constant Version_32 := 16#e4943bbc#;
+   u00190 : constant Version_32 := 16#bbc78b82#;
    pragma Export (C, u00190, "liningS");
-   u00191 : constant Version_32 := 16#703c2fd2#;
+   u00191 : constant Version_32 := 16#51511527#;
    pragma Export (C, u00191, "mappingB");
-   u00192 : constant Version_32 := 16#f4e4d922#;
+   u00192 : constant Version_32 := 16#d589e3d7#;
    pragma Export (C, u00192, "mappingS");
-   u00193 : constant Version_32 := 16#f21a8567#;
+   u00193 : constant Version_32 := 16#7ac55330#;
    pragma Export (C, u00193, "preprocessingB");
-   u00194 : constant Version_32 := 16#e9e716bb#;
+   u00194 : constant Version_32 := 16#c676cbe0#;
    pragma Export (C, u00194, "preprocessingS");
    u00195 : constant Version_32 := 16#0d7f1a43#;
    pragma Export (C, u00195, "ada__calendarB");

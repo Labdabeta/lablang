@@ -11,6 +11,8 @@ package Lining is
     task type Liner (
         Input : access Mapping.Mapping_Buffers.Buffer;
         Output : access Lining_Buffers.Buffer) is
+        -- I have never seen the liner go beyond ~2.5k stack
+        pragma Storage_Size (16#20000#);
         entry Line;
     end Liner;
 end Lining;

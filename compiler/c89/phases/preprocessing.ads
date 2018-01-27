@@ -17,9 +17,8 @@ package Preprocessing is
     task type Preprocessor (
         Input : access Decomposing.Preprocessing_Buffers.Buffer;
         Output : access Preprocessing_Buffers.Buffer) is
-        -- Extra space needed to support 3 child tasks
-        -- 4x task size
-        pragma Storage_Size (8388608);
+        -- Extra space needed to support child tasks
+        pragma Storage_Size (16#8000000#);
         entry Preprocess;
     end Preprocessor;
 end Preprocessing;

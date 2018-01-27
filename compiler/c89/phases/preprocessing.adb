@@ -113,21 +113,33 @@ package body Preprocessing is
                 end if;
             end Process_Define;
 
-            procedure Include_Local_File (File : in Unbounded_String) is
-                Map_Buffer : aliased Mapping.Mapping_Buffers.Buffer;
-                Line_Buffer : aliased Lining.Lining_Buffers.Buffer;
-                Deco_Buffer : aliased Decomposing.Preprocessing_Buffers.Buffer;
+            Map_Buffer : aliased Mapping.Mapping_Buffers.Buffer;
+            Line_Buffer : aliased Lining.Lining_Buffers.Buffer;
+            Deco_Buffer : aliased Decomposing.Preprocessing_Buffers.Buffer;
 
-                Mapper : Mapping.Mapper (Map_Buffer'Access);
-                Liner : Lining.Liner (Map_Buffer'Access, Line_Buffer'Access);
-                Decomposer : Decomposing.Decomposer (
-                    Line_Buffer'Access, Deco_Buffer'Access);
+            Mapper : Mapping.Mapper (Map_Buffer'Access);
+            Liner : Lining.Liner (Map_Buffer'Access, Line_Buffer'Access);
+            Decomposer : Decomposing.Decomposer (
+                Line_Buffer'Access, Deco_Buffer'Access);
+            procedure Include_Local_File (File : in Unbounded_String) is
+                -- TODO: Somehow use a 'bigger' one? or something?
+                Deco_Copy_Buffer :
+                    aliased Decomposing.Preprocessing_Buffers.Buffer;
+                Copy_Next : Preprocessing_Token;
             begin
                 Ada.Text_IO.Put_Line ("Including " & To_String (File));
                 Mapper.Map (Slice (File, 2, Length (File) - 1));
                 Liner.Line;
                 Decomposer.Decompose;
-                Process_Decomposition (Deco_Buffer'Access);
+
+                loop
+                    Deco_Buffer.Remove (Copy_Next);
+                    Deco_Copy_Buffer.Insert (Copy_Next);
+
+                    exit when Copy_Next.Kind = PTT_EOF;
+                end loop;
+
+                Process_Decomposition (Deco_Copy_Buffer'Access);
                 Ada.Text_IO.Put_Line ("Included " & To_String (File));
             end Include_Local_File;
 

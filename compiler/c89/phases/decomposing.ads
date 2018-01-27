@@ -13,6 +13,8 @@ package Decomposing is
     task type Decomposer (
         Input : access Lining.Lining_Buffers.Buffer;
         Output : access Preprocessing_Buffers.Buffer) is
+        -- I have never seen the decomposer go beyond ~2.5k stack
+        pragma Storage_Size (16#20000#);
         entry Decompose;
     end Decomposer;
 end Decomposing;
