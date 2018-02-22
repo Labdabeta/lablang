@@ -35,7 +35,7 @@ package ada_main is
    pragma Export (C, main, "main");
 
    type Version_32 is mod 2 ** 32;
-   u00001 : constant Version_32 := 16#212cf3a1#;
+   u00001 : constant Version_32 := 16#7536edae#;
    pragma Export (C, u00001, "mainB");
    u00002 : constant Version_32 := 16#b6df930e#;
    pragma Export (C, u00002, "system__standard_libraryB");
@@ -195,10 +195,10 @@ package ada_main is
    pragma Export (C, u00079, "system__stringsS");
    u00080 : constant Version_32 := 16#bbaa76ac#;
    pragma Export (C, u00080, "system__file_control_blockS");
-   u00081 : constant Version_32 := 16#4eea072e#;
-   pragma Export (C, u00081, "decomposingB");
-   u00082 : constant Version_32 := 16#f8a74e44#;
-   pragma Export (C, u00082, "decomposingS");
+   u00081 : constant Version_32 := 16#a6ba704a#;
+   pragma Export (C, u00081, "concatenatingB");
+   u00082 : constant Version_32 := 16#fb090616#;
+   pragma Export (C, u00082, "concatenatingS");
    u00083 : constant Version_32 := 16#e6d4fa36#;
    pragma Export (C, u00083, "ada__stringsS");
    u00084 : constant Version_32 := 16#3791e504#;
@@ -263,7 +263,7 @@ package ada_main is
    pragma Export (C, u00113, "system__stream_attributesS");
    u00114 : constant Version_32 := 16#5a5d08de#;
    pragma Export (C, u00114, "sourceB");
-   u00115 : constant Version_32 := 16#a5c43c3a#;
+   u00115 : constant Version_32 := 16#7d71262e#;
    pragma Export (C, u00115, "sourceS");
    u00116 : constant Version_32 := 16#46899fd1#;
    pragma Export (C, u00116, "system__concat_7B");
@@ -289,9 +289,9 @@ package ada_main is
    pragma Export (C, u00126, "system__concat_2B");
    u00127 : constant Version_32 := 16#44953bd4#;
    pragma Export (C, u00127, "system__concat_2S");
-   u00128 : constant Version_32 := 16#d6b9b60f#;
+   u00128 : constant Version_32 := 16#7cc8076f#;
    pragma Export (C, u00128, "buffersB");
-   u00129 : constant Version_32 := 16#83db28a8#;
+   u00129 : constant Version_32 := 16#5b6e32bc#;
    pragma Export (C, u00129, "buffersS");
    u00130 : constant Version_32 := 16#37a60d57#;
    pragma Export (C, u00130, "system__taskingB");
@@ -407,21 +407,21 @@ package ada_main is
    pragma Export (C, u00185, "ada__real_timeB");
    u00186 : constant Version_32 := 16#c3d451b0#;
    pragma Export (C, u00186, "ada__real_timeS");
-   u00187 : constant Version_32 := 16#f0b39030#;
+   u00187 : constant Version_32 := 16#39e3b467#;
    pragma Export (C, u00187, "tokensB");
-   u00188 : constant Version_32 := 16#ec3f2deb#;
+   u00188 : constant Version_32 := 16#ba08dcb4#;
    pragma Export (C, u00188, "tokensS");
-   u00189 : constant Version_32 := 16#1405386b#;
-   pragma Export (C, u00189, "liningB");
-   u00190 : constant Version_32 := 16#bbc78b82#;
-   pragma Export (C, u00190, "liningS");
-   u00191 : constant Version_32 := 16#51511527#;
-   pragma Export (C, u00191, "mappingB");
-   u00192 : constant Version_32 := 16#d589e3d7#;
-   pragma Export (C, u00192, "mappingS");
-   u00193 : constant Version_32 := 16#60179715#;
+   u00189 : constant Version_32 := 16#5a895de2#;
+   pragma Export (C, u00189, "system__pool_globalB");
+   u00190 : constant Version_32 := 16#7141203e#;
+   pragma Export (C, u00190, "system__pool_globalS");
+   u00191 : constant Version_32 := 16#a6359005#;
+   pragma Export (C, u00191, "system__memoryB");
+   u00192 : constant Version_32 := 16#1f488a30#;
+   pragma Export (C, u00192, "system__memoryS");
+   u00193 : constant Version_32 := 16#4b4ba621#;
    pragma Export (C, u00193, "preprocessingB");
-   u00194 : constant Version_32 := 16#c676cbe0#;
+   u00194 : constant Version_32 := 16#d09ed1e3#;
    pragma Export (C, u00194, "preprocessingS");
    u00195 : constant Version_32 := 16#0d7f1a43#;
    pragma Export (C, u00195, "ada__calendarB");
@@ -475,26 +475,34 @@ package ada_main is
    pragma Export (C, u00219, "ada__strings__unbounded__hashB");
    u00220 : constant Version_32 := 16#9c644680#;
    pragma Export (C, u00220, "ada__strings__unbounded__hashS");
-   u00221 : constant Version_32 := 16#5a895de2#;
-   pragma Export (C, u00221, "system__pool_globalB");
-   u00222 : constant Version_32 := 16#7141203e#;
-   pragma Export (C, u00222, "system__pool_globalS");
-   u00223 : constant Version_32 := 16#a6359005#;
-   pragma Export (C, u00223, "system__memoryB");
-   u00224 : constant Version_32 := 16#1f488a30#;
-   pragma Export (C, u00224, "system__memoryS");
-   u00225 : constant Version_32 := 16#7c9380ff#;
-   pragma Export (C, u00225, "system__strings__stream_opsB");
-   u00226 : constant Version_32 := 16#55d4bd57#;
-   pragma Export (C, u00226, "system__strings__stream_opsS");
-   u00227 : constant Version_32 := 16#63d47364#;
-   pragma Export (C, u00227, "ada__streams__stream_ioB");
-   u00228 : constant Version_32 := 16#31fc8e02#;
-   pragma Export (C, u00228, "ada__streams__stream_ioS");
-   u00229 : constant Version_32 := 16#5de653db#;
-   pragma Export (C, u00229, "system__communicationB");
-   u00230 : constant Version_32 := 16#5f55b9d6#;
-   pragma Export (C, u00230, "system__communicationS");
+   u00221 : constant Version_32 := 16#eab05f9c#;
+   pragma Export (C, u00221, "decomposingB");
+   u00222 : constant Version_32 := 16#2ed8706d#;
+   pragma Export (C, u00222, "decomposingS");
+   u00223 : constant Version_32 := 16#48b6657a#;
+   pragma Export (C, u00223, "liningB");
+   u00224 : constant Version_32 := 16#5a1520cb#;
+   pragma Export (C, u00224, "liningS");
+   u00225 : constant Version_32 := 16#ec30e37f#;
+   pragma Export (C, u00225, "mappingB");
+   u00226 : constant Version_32 := 16#b05d0f9b#;
+   pragma Export (C, u00226, "mappingS");
+   u00227 : constant Version_32 := 16#7c9380ff#;
+   pragma Export (C, u00227, "system__strings__stream_opsB");
+   u00228 : constant Version_32 := 16#55d4bd57#;
+   pragma Export (C, u00228, "system__strings__stream_opsS");
+   u00229 : constant Version_32 := 16#63d47364#;
+   pragma Export (C, u00229, "ada__streams__stream_ioB");
+   u00230 : constant Version_32 := 16#31fc8e02#;
+   pragma Export (C, u00230, "ada__streams__stream_ioS");
+   u00231 : constant Version_32 := 16#5de653db#;
+   pragma Export (C, u00231, "system__communicationB");
+   u00232 : constant Version_32 := 16#5f55b9d6#;
+   pragma Export (C, u00232, "system__communicationS");
+   u00233 : constant Version_32 := 16#6cd1fd8e#;
+   pragma Export (C, u00233, "parsingB");
+   u00234 : constant Version_32 := 16#270d2c94#;
+   pragma Export (C, u00234, "parsingS");
    --  BEGIN ELABORATION ORDER
    --  ada%s
    --  ada.characters%s
@@ -725,6 +733,10 @@ package ada_main is
    --  decomposing%b
    --  preprocessing%s
    --  preprocessing%b
+   --  concatenating%s
+   --  concatenating%b
+   --  parsing%s
+   --  parsing%b
    --  main%b
    --  END ELABORATION ORDER
 

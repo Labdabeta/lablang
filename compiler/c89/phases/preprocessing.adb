@@ -127,7 +127,6 @@ package body Preprocessing is
                     aliased Decomposing.Preprocessing_Buffers.Buffer;
                 Copy_Next : Preprocessing_Token;
             begin
-                Ada.Text_IO.Put_Line ("Including " & To_String (File));
                 Mapper.Map (Slice (File, 2, Length (File) - 1));
                 Liner.Line;
                 Decomposer.Decompose;
@@ -140,7 +139,6 @@ package body Preprocessing is
                 end loop;
 
                 Process_Decomposition (Deco_Copy_Buffer'Access);
-                Ada.Text_IO.Put_Line ("Included " & To_String (File));
             end Include_Local_File;
 
             procedure Include_Builtin_File (File : in Unbounded_String) is

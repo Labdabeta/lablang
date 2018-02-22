@@ -1,23 +1,54 @@
+with Ada.Unchecked_Deallocation;
+
 package body Buffers is
+    procedure Free_Node is new Ada.Unchecked_Deallocation (
+        Element_Node, Element_Node_Access);
     protected body Buffer is
-        entry Insert (Item : in Element) when Count < Size is
+        entry Insert (Item : in Element) when Next_Node /= null is
         begin
-            Contents (Index) := Item;
-            Index := Index - 1;
-            if Index < 1 then
-                Index := Size;
+            Next_Node.Value := Item;
+            Next_Node.Next := null;
+            if Head = null then
+                Head := Next_Node;
+                Tail := Next_Node;
+            else
+                Tail.Next := Next_Node;
+                Tail := Next_Node;
             end if;
-            Count := Count + 1;
+
+            Next_Node := new Element_Node;
+        exception
+            when Storage_Error =>
+                Next_Node := null;
         end Insert;
 
-        entry Remove (Item : out Element) when Count > 0 is
+        entry Remove (Item : out Element) when Head /= null is
+            Removed : Element_Node_Access := Head;
         begin
-            if Index + Count > Size then
-                Item := Contents (Index + Count - Size);
+            Item := Removed.Value;
+            Head := Removed.Next;
+            if Next_Node = null then
+                Next_Node := Removed;
             else
-                Item := Contents (Index + Count);
+                Free_Node (Removed);
             end if;
-            Count := Count - 1;
         end Remove;
+
+        entry Replace (Item : in Element) when Next_Node /= null is
+        begin
+            Next_Node.Value := Item;
+            Next_Node.Next := Head;
+            if Head = null then
+                Head := Next_Node;
+                Tail := Next_Node;
+            else
+                Head := Next_Node;
+            end if;
+
+            Next_Node := new Element_Node;
+        exception
+            when Storage_Error =>
+                Next_Node := null;
+        end Replace;
     end Buffer;
 end Buffers;

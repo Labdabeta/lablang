@@ -139,7 +139,7 @@ $$\mbox{cmp}(X,Y) = \begin{cases}
                 & 01111 & \labcode{PUT}/\labcode{PTB} & $\mbox{write}(B + I) := A$ & Little/Big-endian \\ \midrule
     Bit-Manip   & 10000 & \labcode{CLZ}/\labcode{CLO} & $A := \mbox{clz}(B + I)$ & Zeroes/Ones \\
                 & 10001 & \labcode{PPZ}/\labcode{POP} & $A := \mbox{popcnt}(B + I)$ & Zeroes/Ones \\
-                & 10010 & \labcode{SHR}/\labcode{SHE} & $A := \frac{A}{2^{B + I}}$ & Zeroes/Ones \\ % Sign extension via 1-padding
+                & 10010 & \labcode{LBT}/\labcode{SBT} & $A := [B + I]_{byte}$/$[B + I]_{byte} := A_{low}$ & Zeroes/Ones \\ % Sign extension via 1-padding
                 & 10011 & \labcode{MOV}/\labcode{MSR} & $A := B + I$/$SPR_A := B + I$ & Normal/Special \\ \midrule
     Float I     & 10100 & \labcode{ITF}/\labcode{UTF} & $A := \mbox{float}(B + I)$ & Signed/Unsigned \\
     (Conversion)& 10101 & \labcode{FLR}/\labcode{FLU} & $A := \lfloor B + I \rfloor$ & Signed/Unsigned \\
@@ -185,11 +185,19 @@ last load-link there.
 Each operation is encoded across as many bits as the register size. The first
 bit indicates whether or not to use the 'special' version of the instruction.
 The next five bits encode the instructions, then five bits to select both the A
-and B registers and finally the remaining bits encode the immediate value.
+and B registers, then as many bits as are required to index the instruction plus
+one indicate the bit shift (in 2's compliment) and finally the remaining bits
+encode the immediate value (also in 2's compliment).
 
-This can be viewed as: \texttt{SNNN\_NNAA AAAB\_BBBB III...} however this is
-largely incorrect, as the 'first' bit is actually the least significant. Thus
-more accurately it can be viewed as: \texttt{\textbf{...III BBBB\_BAAA AANN\_NNNS}}.
+This can be viewed as: \texttt{SNNN\_NNAA AAAB\_BBBB SSS... III...} however this
+is largely incorrect, as the 'first' bit is actually the least significant. Thus
+more accurately it can be viewed as:
+\texttt{\textbf{...III ...SSS BBBB\_BAAA AANN\_NNNS}}.
+
+For example, the layout for a 32-bit, 8-bit-byte machine would be:
+\texttt{\textbf{IIII\_IIII IISS\_SSSS BBBB\_BAAA AANN\_NNNS}}. While a 64-bit,
+8-bit-byte machine would be:
+\texttt{\textbf{IIII\_IIII IIII\_IIII IIII\_IIII IIII\_IIII IIII\_IIII ISSS\_SSSS BBBB\_BAAA AANN\_NNNS}}.
 
 The immediate value is signed using 2's compliment notation.
 
@@ -214,6 +222,9 @@ memory 0 will trigger an invalid instruction interrupt ($0 + $
 
 To switch back to protected mode all you have to do is trigger any interrupt.
 All interrupts are handled in protected mode.
+
+If all memory is protected (by setting \labcode{PLN} to 0) then the CPU sleeps.
+It will reawaken when an interrupt is to be processed.
 
 \section{Interrupts}
 
@@ -245,4 +256,17 @@ register is written no other interrupts can occur.
 
 % TODO: Via SWI, return to kernel causes mode switch, other interrupts can occur
 % once returned
+% INT LR
+
+\subsection{Tools}
+
+This project comes with a number of tools for working with the LAB architecture.
+Some are to assist in implementation of LAB machines while some assist in
+development for such machines.
+
+\subsubsection{Implementations}
+\subsubsection{Linker}
+\subsubsection{Assembler}
+\subsubsection{C Compiler}
+
 \end{document}

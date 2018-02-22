@@ -7,8 +7,7 @@ with Decomposing;
 with Tokens;
 
 package Preprocessing is
-    package Preprocessing_Buffers is new Buffers (
-        Element => Tokens.Preprocessing_Token, Size => 16#1000#);
+    package Preprocessing_Buffers is new Buffers (Tokens.Preprocessing_Token);
 
     procedure Add_Search_Directory (Directory : in String);
     procedure Remove_Search_Directory (Directory : in String);
@@ -17,8 +16,7 @@ package Preprocessing is
     task type Preprocessor (
         Input : access Decomposing.Preprocessing_Buffers.Buffer;
         Output : access Preprocessing_Buffers.Buffer) is
-        -- Extra space needed to support child tasks
-        pragma Storage_Size (16#8000000#);
+        pragma Storage_Size (16#40000#);
         entry Preprocess;
     end Preprocessor;
 end Preprocessing;

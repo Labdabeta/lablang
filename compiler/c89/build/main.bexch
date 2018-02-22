@@ -2,7 +2,7 @@
 b__main.o
 [PROJECT FILES]
 /home/louis/projects/lab/compiler/c89/compiler.gpr
-20180126191659
+20180131012912
 [BOUND OBJECT FILES]
 /home/louis/projects/lab/compiler/c89/build/buffers.o
 /home/louis/projects/lab/compiler/c89/build/source.o
@@ -11,6 +11,8 @@ b__main.o
 /home/louis/projects/lab/compiler/c89/build/tokens.o
 /home/louis/projects/lab/compiler/c89/build/decomposing.o
 /home/louis/projects/lab/compiler/c89/build/preprocessing.o
+/home/louis/projects/lab/compiler/c89/build/concatenating.o
+/home/louis/projects/lab/compiler/c89/build/parsing.o
 /home/louis/projects/lab/compiler/c89/build/main.o
 [GENERATED SOURCE FILES]
 b__main.ads

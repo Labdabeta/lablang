@@ -25,7 +25,7 @@ package body ada_main is
    E073 : Short_Integer; pragma Import (Ada, E073, "system__finalization_root_E");
    E071 : Short_Integer; pragma Import (Ada, E071, "ada__finalization_E");
    E070 : Short_Integer; pragma Import (Ada, E070, "system__file_io_E");
-   E228 : Short_Integer; pragma Import (Ada, E228, "ada__streams__stream_io_E");
+   E230 : Short_Integer; pragma Import (Ada, E230, "ada__streams__stream_io_E");
    E107 : Short_Integer; pragma Import (Ada, E107, "system__storage_pools_E");
    E101 : Short_Integer; pragma Import (Ada, E101, "system__finalization_masters_E");
    E099 : Short_Integer; pragma Import (Ada, E099, "system__storage_pools__subpools_E");
@@ -35,7 +35,7 @@ package body ada_main is
    E089 : Short_Integer; pragma Import (Ada, E089, "ada__strings__maps_E");
    E085 : Short_Integer; pragma Import (Ada, E085, "ada__strings__unbounded_E");
    E186 : Short_Integer; pragma Import (Ada, E186, "ada__real_time_E");
-   E222 : Short_Integer; pragma Import (Ada, E222, "system__pool_global_E");
+   E190 : Short_Integer; pragma Import (Ada, E190, "system__pool_global_E");
    E170 : Short_Integer; pragma Import (Ada, E170, "system__tasking__initialization_E");
    E156 : Short_Integer; pragma Import (Ada, E156, "system__tasking__protected_objects_E");
    E174 : Short_Integer; pragma Import (Ada, E174, "system__tasking__protected_objects__entries_E");
@@ -43,11 +43,13 @@ package body ada_main is
    E184 : Short_Integer; pragma Import (Ada, E184, "system__tasking__stages_E");
    E129 : Short_Integer; pragma Import (Ada, E129, "buffers_E");
    E115 : Short_Integer; pragma Import (Ada, E115, "source_E");
-   E192 : Short_Integer; pragma Import (Ada, E192, "mapping_E");
-   E190 : Short_Integer; pragma Import (Ada, E190, "lining_E");
+   E226 : Short_Integer; pragma Import (Ada, E226, "mapping_E");
+   E224 : Short_Integer; pragma Import (Ada, E224, "lining_E");
    E188 : Short_Integer; pragma Import (Ada, E188, "tokens_E");
-   E082 : Short_Integer; pragma Import (Ada, E082, "decomposing_E");
+   E222 : Short_Integer; pragma Import (Ada, E222, "decomposing_E");
    E194 : Short_Integer; pragma Import (Ada, E194, "preprocessing_E");
+   E082 : Short_Integer; pragma Import (Ada, E082, "concatenating_E");
+   E234 : Short_Integer; pragma Import (Ada, E234, "parsing_E");
 
    Local_Priority_Specific_Dispatching : constant String := "";
    Local_Interrupt_States : constant String := "";
@@ -56,68 +58,109 @@ package body ada_main is
 
    procedure finalize_library is
    begin
+      E082 := E082 - 1;
       declare
          procedure F1;
-         pragma Import (Ada, F1, "preprocessing__finalize_body");
+         pragma Import (Ada, F1, "concatenating__finalize_spec");
       begin
-         E194 := E194 - 1;
          F1;
       end;
-      E174 := E174 - 1;
       declare
          procedure F2;
-         pragma Import (Ada, F2, "system__tasking__protected_objects__entries__finalize_spec");
+         pragma Import (Ada, F2, "preprocessing__finalize_body");
       begin
+         E194 := E194 - 1;
          F2;
       end;
-      E222 := E222 - 1;
       declare
          procedure F3;
-         pragma Import (Ada, F3, "system__pool_global__finalize_spec");
+         pragma Import (Ada, F3, "preprocessing__finalize_spec");
       begin
          F3;
       end;
-      E085 := E085 - 1;
+      E222 := E222 - 1;
       declare
          procedure F4;
-         pragma Import (Ada, F4, "ada__strings__unbounded__finalize_spec");
+         pragma Import (Ada, F4, "decomposing__finalize_spec");
       begin
          F4;
       end;
-      E062 := E062 - 1;
+      E188 := E188 - 1;
       declare
          procedure F5;
-         pragma Import (Ada, F5, "ada__text_io__finalize_spec");
+         pragma Import (Ada, F5, "tokens__finalize_spec");
       begin
          F5;
       end;
-      E099 := E099 - 1;
+      E224 := E224 - 1;
       declare
          procedure F6;
-         pragma Import (Ada, F6, "system__storage_pools__subpools__finalize_spec");
+         pragma Import (Ada, F6, "lining__finalize_spec");
       begin
          F6;
       end;
-      E101 := E101 - 1;
+      E226 := E226 - 1;
       declare
          procedure F7;
-         pragma Import (Ada, F7, "system__finalization_masters__finalize_spec");
+         pragma Import (Ada, F7, "mapping__finalize_spec");
       begin
          F7;
       end;
-      E228 := E228 - 1;
+      E174 := E174 - 1;
       declare
          procedure F8;
-         pragma Import (Ada, F8, "ada__streams__stream_io__finalize_spec");
+         pragma Import (Ada, F8, "system__tasking__protected_objects__entries__finalize_spec");
       begin
          F8;
       end;
+      E190 := E190 - 1;
       declare
          procedure F9;
-         pragma Import (Ada, F9, "system__file_io__finalize_body");
+         pragma Import (Ada, F9, "system__pool_global__finalize_spec");
+      begin
+         F9;
+      end;
+      E085 := E085 - 1;
+      declare
+         procedure F10;
+         pragma Import (Ada, F10, "ada__strings__unbounded__finalize_spec");
+      begin
+         F10;
+      end;
+      E062 := E062 - 1;
+      declare
+         procedure F11;
+         pragma Import (Ada, F11, "ada__text_io__finalize_spec");
+      begin
+         F11;
+      end;
+      E099 := E099 - 1;
+      declare
+         procedure F12;
+         pragma Import (Ada, F12, "system__storage_pools__subpools__finalize_spec");
+      begin
+         F12;
+      end;
+      E101 := E101 - 1;
+      declare
+         procedure F13;
+         pragma Import (Ada, F13, "system__finalization_masters__finalize_spec");
+      begin
+         F13;
+      end;
+      E230 := E230 - 1;
+      declare
+         procedure F14;
+         pragma Import (Ada, F14, "ada__streams__stream_io__finalize_spec");
+      begin
+         F14;
+      end;
+      declare
+         procedure F15;
+         pragma Import (Ada, F15, "system__file_io__finalize_body");
       begin
          E070 := E070 - 1;
-         F9;
+         F15;
       end;
       declare
          procedure Reraise_Library_Exception_If_Any;
@@ -217,13 +260,13 @@ package body ada_main is
            False, True, True, True, True, False, False, False, 
            False, False, True, False, True, True, False, True, 
            False, True, True, False, False, False, True, True, 
-           False, False, True, False, True, False, False, False, 
+           False, True, True, False, True, False, False, False, 
            True, False, True, True, True, True, True, False, 
            False, True, False, True, True, True, False, True, 
            True, False, True, True, True, True, False, True, 
            True, False, False, False, True, True, True, True, 
            False, True, False),
-         Count => (0, 0, 0, 2, 2, 1, 2, 0, 5, 0),
+         Count => (0, 0, 0, 3, 2, 1, 2, 0, 7, 0),
          Unknown => (False, False, False, False, False, False, True, False, True, False));
       Priority_Specific_Dispatching :=
         Local_Priority_Specific_Dispatching'Address;
@@ -275,7 +318,7 @@ package body ada_main is
       System.File_Io'Elab_Body;
       E070 := E070 + 1;
       Ada.Streams.Stream_Io'Elab_Spec;
-      E228 := E228 + 1;
+      E230 := E230 + 1;
       System.Storage_Pools'Elab_Spec;
       E107 := E107 + 1;
       System.Finalization_Masters'Elab_Spec;
@@ -299,7 +342,7 @@ package body ada_main is
       Ada.Real_Time'Elab_Body;
       E186 := E186 + 1;
       System.Pool_Global'Elab_Spec;
-      E222 := E222 + 1;
+      E190 := E190 + 1;
       System.Tasking.Initialization'Elab_Body;
       E170 := E170 + 1;
       System.Tasking.Protected_Objects'Elab_Body;
@@ -312,15 +355,25 @@ package body ada_main is
       E184 := E184 + 1;
       E129 := E129 + 1;
       E115 := E115 + 1;
+      Mapping'Elab_Spec;
       Mapping'Elab_Body;
-      E192 := E192 + 1;
+      E226 := E226 + 1;
+      Lining'Elab_Spec;
       Lining'Elab_Body;
-      E190 := E190 + 1;
+      E224 := E224 + 1;
+      Tokens'Elab_Spec;
       E188 := E188 + 1;
+      Decomposing'Elab_Spec;
       Decomposing'Elab_Body;
-      E082 := E082 + 1;
+      E222 := E222 + 1;
+      Preprocessing'Elab_Spec;
       Preprocessing'Elab_Body;
       E194 := E194 + 1;
+      Concatenating'Elab_Spec;
+      Concatenating'Elab_Body;
+      E082 := E082 + 1;
+      Parsing'Elab_Body;
+      E234 := E234 + 1;
    end adainit;
 
    procedure Ada_Main_Program;
@@ -371,6 +424,8 @@ package body ada_main is
    --   /home/louis/projects/lab/compiler/c89/build/tokens.o
    --   /home/louis/projects/lab/compiler/c89/build/decomposing.o
    --   /home/louis/projects/lab/compiler/c89/build/preprocessing.o
+   --   /home/louis/projects/lab/compiler/c89/build/concatenating.o
+   --   /home/louis/projects/lab/compiler/c89/build/parsing.o
    --   /home/louis/projects/lab/compiler/c89/build/main.o
    --   -L/home/louis/projects/lab/compiler/c89/build/
    --   -L/home/louis/projects/lab/compiler/c89/build/

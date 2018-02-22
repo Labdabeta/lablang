@@ -273,6 +273,7 @@ package body Decomposing is
                 terminate;
             end select;
 
+            Got_First := False;
             Next_Symbol;
             loop
                 if Next.Value = Character'First then
