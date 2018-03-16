@@ -28,12 +28,10 @@ package body Compiling is
         -- Recursive Descent with Backtracking
         -- TODO: LAXLR(1)?
 
-        function Parse_Primary_Expression return Boolean is
+        procedure Parse_Translation_Unit is
         begin
-            if Accept_Symbol (
-        end Parse_Primary_Expression;
-
-
+            null;
+        end Parse_Translation_Unit;
 
     begin
         loop
@@ -45,6 +43,8 @@ package body Compiling is
 
             Input.Remove (Next_Next);
             -- TODO: LR(1) or similar (LALR(1) Recursive Ascent)
+
+            Parse_Translation_Unit;
         end loop;
     end Compiler;
 end Compiling;

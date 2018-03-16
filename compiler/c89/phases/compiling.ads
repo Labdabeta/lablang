@@ -7,6 +7,7 @@ with Tokens;
 with Assembly;
 
 package Compiling is
+    -- TODO: Protected Parse Tree type as output?
     package Instruction_Buffers is new Buffers (Assembly.Instruction);
 
     task type Compiler (

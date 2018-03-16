@@ -40,6 +40,7 @@ package body LAB.Fast32 is
     function Create_CPU32 (
         Memory : in Memory_Array_Access;
         Get : in Get_Callback;
-        Put : in Put_Callback) return CPU32;
+        Put : in Put_Callback)
+        return CPU32;
 
 end LAB.Fast32;
